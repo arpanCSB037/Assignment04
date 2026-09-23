@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Q5 - AJAX Form</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            background: linear-gradient(135deg, #141e30, #243b55);
+
+            padding: 30px;
+        }
+
+        .container {
+            width: 550px;
+            max-width: 100%;
+
+            padding: 35px;
+
+            background: white;
+            border-radius: 15px;
+
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            text-align: center;
+            color: #243b55;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="file"],
+        select {
+            width: 100%;
+            padding: 11px;
+
+            border: 2px solid #ddd;
+            border-radius: 8px;
+
+            font-size: 15px;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: #243b55;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 20px;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: normal;
+        }
+
+        button {
+            width: 100%;
+            padding: 13px;
+
+            border: none;
+            border-radius: 8px;
+
+            background: #243b55;
+            color: white;
+
+            font-size: 16px;
+            font-weight: bold;
+
+            cursor: pointer;
+
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #141e30;
+            transform: translateY(-2px);
+        }
+
+        #result {
+            margin-top: 25px;
+        }
+
+        .feedback {
+            padding: 20px;
+
+            background: #f1f5f9;
+
+            border-radius: 10px;
+
+            color: #243b55;
+        }
+
+        .feedback h2 {
+            margin-bottom: 15px;
+        }
+
+        .feedback p {
+            margin: 8px 0;
+        }
+
+        .error {
+            padding: 15px;
+
+            background: #ffe5e5;
+            border-radius: 8px;
+
+            color: #b00020;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>Student Information Form</h1>
+
+        <p class="subtitle">
+            AJAX + PHP Form Submission
+        </p>
+
+
+        <form id="studentForm">
+
+            <!-- TEXTBOX -->
+            <div class="form-group">
+
+                <label for="studentName">
+                    Name
+                </label>
+
+                <input type="text" id="studentName" name="studentName" placeholder="Enter your name" required>
+
+            </div>
+
+
+            <!-- PASSWORD -->
+            <div class="form-group">
+
+                <label for="password">
+                    Password
+                </label>
+
+                <input type="password" id="password" name="password" placeholder="Enter your password" required>
+
+            </div>
+
+
+            <!-- RADIO / OPTION BUTTON -->
+            <div class="form-group">
+
+                <label>Gender</label>
+
+                <div class="radio-group">
+
+                    <label class="radio-option">
+                        <input type="radio" name="gender" value="Male" required>
+                        Male
+                    </label>
+
+                    <label class="radio-option">
+                        <input type="radio" name="gender" value="Female">
+                        Female
+                    </label>
+
+                    <label class="radio-option">
+                        <input type="radio" name="gender" value="Other">
+                        Other
+                    </label>
+
+                </div>
+
+            </div>
+
+
+            <!-- LIST BOX -->
+            <div class="form-group">
+
+                <label for="course">
+                    Select Course
+                </label>
+
+                <select id="course" name="course" required>
+
+                    <option value="">
+                        -- Select Course --
+                    </option>
+
+                    <option value="Computer Science">
+                        Computer Science
+                    </option>
+
+                    <option value="Information Technology">
+                        Information Technology
+                    </option>
+
+                    <option value="Electronics">
+                        Electronics
+                    </option>
+
+                    <option value="Electrical">
+                        Electrical
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- FILE UPLOAD -->
+            <div class="form-group">
+
+                <label for="profilePhoto">
+                    Upload Profile Photo
+                </label>
+
+                <input type="file" id="profilePhoto" name="profilePhoto" accept="image/*" required>
+
+            </div>
+
+
+            <input type="hidden" name="studentId" value="BT5WEB001">
+
+
+            <!-- SUBMIT BUTTON -->
+            <button type="submit">
+                Submit Information
+            </button>
+
+        </form>
+
+
+        <div id="result"></div>
+
+
+    </div>
+
+
+    <script>
+
+        const form = document.getElementById("studentForm");
+
+        form.addEventListener("submit", function (event) {
+
+            event.preventDefault();
+
+            const formData = new FormData(form);
+
+            fetch("prob5.php", {
+
+                method: "POST",
+
+                body: formData
+
+            })
+                .then(response => response.json())
+
+                .then(data => {
+
+                    if (!data.success) {
+
+                        document.getElementById("result").innerHTML = `
+                    <div class="error">
+                        <strong>Error:</strong>
+                        ${data.message}
+                    </div>
+                `;
+
+                        return;
+                    }
+
+                    document.getElementById("result").innerHTML = `
+
+                <div class="feedback">
+
+                    <h2>Server Feedback</h2>
+
+                    <p>
+                        <strong>Name:</strong>
+                        ${data.name}
+                    </p>
+
+                    <p>
+                        <strong>Gender:</strong>
+                        ${data.gender}
+                    </p>
+
+                    <p>
+                        <strong>Course:</strong>
+                        ${data.course}
+                    </p>
+
+                    <p>
+                        <strong>Student ID:</strong>
+                        ${data.studentId}
+                    </p>
+
+                    <p>
+                        <strong>Uploaded File:</strong>
+                        ${data.fileName}
+                    </p>
+
+                </div>
+
+            `;
+
+                })
+
+                .catch(error => {
+
+                    document.getElementById("result").innerHTML = `
+
+                <div class="error">
+                    Something went wrong while communicating
+                    with the server.
+                </div>
+
+            `;
+
+                    console.error(error);
+
+                });
+
+        });
+
+    </script>
+
+</body>
+
+</html>

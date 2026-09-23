@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <title>Q6 - Animal Image Gallery</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, #141e30, #243b55);
+        }
+
+        .container {
+            width: 1100px;
+            max-width: 100%;
+            margin: auto;
+            padding: 35px;
+            background: white;
+            border-radius: 18px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            text-align: center;
+            color: #243b55;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .form-section {
+            width: 450px;
+            max-width: 100%;
+            margin: auto;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #243b55;
+        }
+
+        button {
+            width: 100%;
+            padding: 13px;
+            border: none;
+            border-radius: 8px;
+            background: #243b55;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #141e30;
+            transform: translateY(-2px);
+        }
+
+        .loading {
+            text-align: center;
+            margin-top: 25px;
+            color: #666;
+            font-weight: bold;
+        }
+
+        .gallery {
+            margin-top: 35px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .animal-card {
+            max-width: 500px;
+            width: 100%;
+            margin: auto;
+            background: #f1f5f9;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.12);
+            transition: 0.3s;
+        }
+
+        .animal-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .animal-card img {
+            width: 100%;
+            height: 250px;
+            object-fit: contain;
+            display: block;
+            background: #e9eef3;
+        }
+
+        .animal-name {
+            padding: 14px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            color: #243b55;
+        }
+
+        .error {
+            margin-top: 25px;
+            padding: 15px;
+            background: #ffe5e5;
+            color: #b00020;
+            border-radius: 8px;
+            text-align: center;
+        }
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <div class="container">
+
+        <h1>Animal Image Gallery</h1>
+
+        <p class="subtitle">
+            Display N animal images using PHP Array and AJAX
+        </p>
+
+
+        <div class="form-section">
+
+            <form id="animalForm">
+
+                <label for="n">
+                    Enter Number of Animals
+                </label>
+
+                <input type="number" id="n" name="n" min="1" max="20" placeholder="Enter a number from 1 to 20"
+                    required>
+
+
+                <button type="submit">
+                    Display Animals
+                </button>
+
+            </form>
+
+        </div>
+
+        <div id="result"></div>
+
+
+    </div>
+
+
+    <script>
+
+        const form = document.getElementById("animalForm");
+
+
+        form.addEventListener("submit", function (event) {
+
+            event.preventDefault();
+
+            const n = document.getElementById("n").value;
+
+            document.getElementById("result").innerHTML = `
+            <div class="loading">
+                Loading animal images...
+            </div>
+        `;
+
+
+            fetch("prob6.php", {
+
+                method: "POST",
+
+                body: new URLSearchParams({
+
+                    n: n
+
+                })
+
+            })
+                .then(response => response.json())
+
+                .then(data => {
+
+                    if (!data.success) {
+
+                        document.getElementById("result").innerHTML = `
+
+                    <div class="error">
+
+                        ${data.message}
+
+                    </div>
+
+                `;
+
+                        return;
+                    }
+
+                    let galleryHTML = `
+
+                <div class="gallery">
+
+            `;
+
+                    data.animals.forEach(function (animal) {
+
+                        galleryHTML += `
+
+                    <div class="animal-card">
+
+                        <img
+                            src="${animal.image}"
+                            alt="${animal.name}"
+                        >
+
+                        <div class="animal-name">
+                            ${animal.name}
+                        </div>
+
+                    </div>
+
+                `;
+
+                    });
+
+                    galleryHTML += `
+
+                </div>
+
+            `;
+
+                    document.getElementById("result").innerHTML =
+                        galleryHTML;
+
+                })
+                .catch(error => {
+
+                    document.getElementById("result").innerHTML = `
+
+                <div class="error">
+
+                    Unable to communicate with the server.
+
+                </div>
+
+            `;
+
+                    console.error(error);
+
+                });
+
+        });
+
+
+    </script>
+
+
+</body>
+
+</html>
