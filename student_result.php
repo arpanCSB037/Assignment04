@@ -2,7 +2,7 @@
 
 $host = "localhost";
 $username = "root";
-$password = "Arpan@123";
+$password = "YOUR PASSWORD";
 $database = "5thSemWebTechLab";
 
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
